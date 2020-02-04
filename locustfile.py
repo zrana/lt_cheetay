@@ -1,5 +1,5 @@
 import os
-from locust import HttpLocust, TaskSet
+from locust import HttpLocust, TaskSet, between
 from CheetayLocustTasks import CheetayTasks
 
 
@@ -17,5 +17,4 @@ class CheetayLocust(HttpLocust):
     """
     host = 'https://test.cheetay.pk/'
     task_set = globals()[os.getenv('LOCUST_TASK_SET', 'CheetayTasks')]
-    min_wait = 30000
-    max_wait = 60000
+    wait_time = between(30, 60)
