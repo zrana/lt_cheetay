@@ -407,7 +407,7 @@ cheetay = Test()
 # cheetay.restaurantDetail()
 # cheetay.addbasket()
 
-for _ in range(10):
+for _ in range(200):
     cheetay.signup()
     time.sleep(3)
 
