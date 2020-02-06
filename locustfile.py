@@ -17,4 +17,4 @@ class CheetayLocust(HttpLocust):
     """
     host = 'https://test.cheetay.pk/'
     task_set = globals()[os.getenv('LOCUST_TASK_SET', 'CheetayTasks')]
-    wait_time = between(30, 60)
+    wait_time = between(10, 30)

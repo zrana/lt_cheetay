@@ -18,10 +18,10 @@ class CheetayTasks(TaskSet):
         """
         Login to Cheetay
         """
-        USER_CREDENTIALS.remove(self.credentials)
-        email = self.credentials[0]
-        self.cheetay_apis.login(email)
-        # self.cheetay_apis.homepage()
+        # USER_CREDENTIALS.remove(self.credentials)
+        # email = self.credentials[0]
+        # self.cheetay_apis.login(email)
+        self.cheetay_apis.homepage()
 
     @task(3)
     def search(self):
@@ -35,6 +35,6 @@ class CheetayTasks(TaskSet):
     def restaurant_detail_page(self):
         self.cheetay_apis.restaurant_detail()
 
-    @task(1)
-    def add_to_basket(self):
-        self.cheetay_apis.add_basket()
+    # @task(1)
+    # def add_to_basket(self):
+    #     self.cheetay_apis.add_basket()
