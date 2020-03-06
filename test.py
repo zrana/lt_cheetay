@@ -19,7 +19,8 @@ class Test(object):
         """
         super(Test, self).__init__()
         self.session = requests.Session()
-        self.hostname = "https://test.cheetay.pk/"
+        self.hostname = "https://replica.cheetay.pk/"
+        self.address_id = 0
 
     def _check_page_response(self, response, response_string):
         """
@@ -102,7 +103,7 @@ class Test(object):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
             'Content-Type': 'application/json',
-            'Referer': 'https://test.cheetay.pk/',
+            'Referer': 'https://replica.cheetay.pk/',
             'Vary': 'Accept, Cookie',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -144,7 +145,7 @@ class Test(object):
         # pdb.set_trace()
         return res
 
-    def checkout(self):
+    def checkout(self, address_id):
         url = self.hostname + 'v2/oscarapi/checkout/'
         headers = {
             'Server': 'nginx/1.4.6 (Ubuntu)',
@@ -161,7 +162,7 @@ class Test(object):
         params = {
             "basket":"/oscarapi/baskets/{}/".format(self.session.cookies['basket_id']),
             "delivery_type":"economy",
-            "address_id": 209274,
+            "address_id": self.address_id,
             "extras":"nothing",
             "tip": 0,
             "shipping_address":{
@@ -198,9 +199,9 @@ class Test(object):
 
         post_url = self.hostname + 'accounts/login/'
         headers = {
-            'Host': 'test.cheetay.pk',
-            'Origin': 'https://test.cheetay.pk',
-            'Referer': 'https://test.cheetay.pk/',
+            'Host': 'replica.cheetay.pk',
+            'Origin': 'https://replica.cheetay.pk/',
+            'Referer': 'https://replica.cheetay.pk/',
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -227,10 +228,13 @@ class Test(object):
         }
         re = self.session.post(post_url, data=params, headers=headers)
         # if re == 200:
+        # print(re)
+        # import pdb; pdb.set_trace()
         self._check_page_response(re, '"status": true')
 
 
-        # import pdb; pdb.set_trace()
+
+
 
         # return re.text
         # return [email, re, token]
@@ -254,7 +258,7 @@ class Test(object):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             # 'Host': 'beta.cheetay.pk',
             # 'Origin': 'https://beta.cheetay.pk',
-            'Referer': 'https://test.cheetay.pk',
+            'Referer': 'https://replica.cheetay.pk/',
             # 'Vary': 'Accept, Cookie',
             # 'Connection': 'keep-alive',
             # 'X-Frame-Options': 'SAMEORIGIN',
@@ -271,7 +275,7 @@ class Test(object):
         return res
 
     def get_user_addresses(self):
-        ur1l = 'https://test.cheetay.pk/accounts/profile/?active=saved-addresses#'
+        ur1l = 'https://replica.cheetay.pk/accounts/profile/?active=saved-addresses#'
         print (self.session.get(ur1l))
 
         url = self.hostname + 'v2/address/user-addresses/'
@@ -299,7 +303,7 @@ class Test(object):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
             'Content-Type': 'application/json',
-            'Referer': 'https://test.cheetay.pk/',
+            'Referer': 'https://replica.cheetay.pk/',
             'Vary': 'Accept, Cookie',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -310,8 +314,8 @@ class Test(object):
         response = self.session.post(post_url, data=json.dumps(params), headers=headers)
         return response.text
 
-    def addbasket(self):
-        post_url = self.hostname + 'v3/oscarapi/basket/add-product/?multi_vender=true&area_id=412'
+    def add_basket(self):
+        post_url = self.hostname + 'v3/oscarapi/basket/add-product/?multi_vender=true&area_id=2650'
         body = {
             "url": "/oscarapi/products/181484/",
             "quantity": 1,
@@ -321,7 +325,7 @@ class Test(object):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
             'Content-Type': 'application/json',
-            'Referer': 'https://test.cheetay.pk/',
+            'Referer': self.hostname,
             'Vary': 'Accept, Cookie',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -330,7 +334,12 @@ class Test(object):
             'Set-Cookies': 'basket_id={}; Path=/'.format(self.session.cookies['basket_id'])
         }
         response = self.session.post(post_url, data=json.dumps(body), headers=headers)
+        # self._check_response_data(response)
+        # get_url = self.hostname + '/v3/oscarapi/basket/{}/promised-time/'.format(self.client.cookies['basket_id'])
+        # response = self.client.get(get_url)
+        # self._check_response_data(response)
         print (response.text)
+        return response
 
     def foodtiles(self):
 
@@ -343,7 +352,7 @@ class Test(object):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
             'Content-Type': 'application/json',
-            'Referer': 'https://test.cheetay.pk/',
+            'Referer': 'https://replica.cheetay.pk/',
             'Vary': 'Accept, Cookie',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -376,15 +385,125 @@ class Test(object):
         response = self.session.get(get_url)
         print (response.text)
 
+    def checkout(self, address_id):
+
+        post_url = self.hostname + '/v3/oscarapi/checkout/'
+        import pdb
+        # pdb.set_trace()
+        body = {
+            "basket": "/oscarapi/baskets/{}".format(self.session.cookies['basket_id']) + "/",
+            "address_id": address_id,
+            "shipping_address": {
+                "country": "/oscarapi/countries/PK/",
+                "first_name": "M",
+                "last_name": "Rehan",
+                "line1": "Arbisoft",
+                "line2": "Judicial Colony",
+                "line4": "Lahore",
+                "phone_number": "+923201498318"
+            },
+            "source": "Android-App",
+            "is_self_pickup": False,
+            "category": "food",
+            "payment_method": "COD"
+        }
+        headers = {
+            'Server': 'nginx/1.4.6 (Ubuntu)',
+            'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
+            'Content-Type': 'application/json',
+            'Referer': self.hostname,
+
+            'Vary': 'Accept, Cookie',
+            'Connection': 'keep-alive',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Allow': 'GET, POST, DELETE, HEAD, OPTIONS',
+            'X-CSRFToken': self.session.cookies['csrftoken'],
+            'Set-Cookies': 'basket_id={}; Path=/'.format(self.session.cookies['basket_id'])
+        }
+        response = self.session.post(post_url, headers=headers, data=json.dumps(body))
+
+        #self._check_response_data(response)
+        print (response.text)
+        return response
 
 
+    def add_address(self):
+
+        post_url = self.hostname + '/v3/oscarapi/address/add/'
+        import pdb
+        # pdb.set_trace()
+        body = {
+            # "basket": "/oscarapi/baskets/{}".format(self.session.cookies['basket_id']) + "/",
+            "instructions": "",
+            "delivery_area": 430,
+            "latitude": 31.46359440,
+            "longitude": 74.24943010,
+            "label": "Home",
+            "line1": "Judicial Colony"
+        }
+        headers = {
+            'Server': 'nginx/1.4.6 (Ubuntu)',
+            'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
+            'Content-Type': 'application/json',
+            'Referer': self.hostname,
+
+            'Vary': 'Accept, Cookie',
+            'Connection': 'keep-alive',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Allow': 'GET, POST, DELETE, HEAD, OPTIONS',
+            'X-CSRFToken': self.session.cookies['csrftoken'],
+            'Set-Cookies': 'basket_id={}; Path=/'.format(self.session.cookies['basket_id'])
+        }
+        response = self.session.post(post_url, headers=headers, data=json.dumps(body))
+
+        #self._check_response_data(response)
+        print (response.text)
+        address_id = json.loads(response.text)["data"]["id"]
+        post_url = self.hostname + '/v3/oscarapi/checkout/'
+        import pdb
+        # pdb.set_trace()
+        body = {
+            "basket": "/oscarapi/baskets/{}".format(self.session.cookies['basket_id']) + "/",
+            "address_id": address_id,
+            "shipping_address": {
+                "country": "/oscarapi/countries/PK/",
+                "first_name": "M",
+                "last_name": "Rehan",
+                "line1": "Arbisoft",
+                "line2": "Judicial Colony",
+                "line4": "Lahore",
+                "phone_number": "+923201498318"
+            },
+            "source": "Android-App",
+            "is_self_pickup": False,
+            "category": "food",
+            "payment_method": "COD"
+        }
+        headers = {
+            'Server': 'nginx/1.4.6 (Ubuntu)',
+            'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
+            'Content-Type': 'application/json',
+            'Referer': self.hostname,
+
+            'Vary': 'Accept, Cookie',
+            'Connection': 'keep-alive',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Allow': 'GET, POST, DELETE, HEAD, OPTIONS',
+            'X-CSRFToken': self.session.cookies['csrftoken'],
+            'Set-Cookies': 'basket_id={}; Path=/'.format(self.session.cookies['basket_id'])
+        }
+        response = self.session.post(post_url, headers=headers, data=json.dumps(body))
+
+        # self._check_response_data(response)
+        print(response.text)
+        return response
 
 
 
 
 import time
 cheetay = Test()
-# print cheetay.signup().text
+# cheetay.signup()
 # assert '"status": true' in '{"status": true, "message": "Success", "data": null}'
 # with open('fake.csv', 'wb') as csv_out:
 #     for _ in range(100):
@@ -407,11 +526,14 @@ cheetay = Test()
 # cheetay.restaurantDetail()
 # cheetay.addbasket()
 
-for _ in range(200):
+for _ in range(300):
     cheetay.signup()
     time.sleep(3)
+#cheetay.login('tester@yopmail.com')
+# address_id = cheetay.add_address()
+#cheetay.add_basket()
 
-
+#cheetay.add_address()
 # sub = cheetay.add_address()
 # print sub.text
 # add = cheetay.get_user_addresses()

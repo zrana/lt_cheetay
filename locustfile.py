@@ -3,7 +3,7 @@ from locust import HttpLocust, TaskSet, between
 from CheetayLocustTasks import CheetayTasks
 
 
-class CheetayTasks(TaskSet):
+class CTasks(TaskSet):
     tasks = {
         CheetayTasks: 1,
     }
@@ -15,6 +15,6 @@ class CheetayLocust(HttpLocust):
     Defines how long a simulated user should wait between executing tasks, as
     well as which TaskSet class should define the user's behavior.
     """
-    host = 'https://test.cheetay.pk/'
+    host = 'https://replica.cheetay.pk/'
     task_set = globals()[os.getenv('LOCUST_TASK_SET', 'CheetayTasks')]
-    wait_time = between(10, 30)
+    wait_time = between(3, 6)

@@ -43,4 +43,4 @@ class CheetayBase(object):
         try:
             assert '"status":true' in page_response
         except:
-            raise Exception("Page response is not correct")
+            raise Exception("Page response is not correct and page response is:{}".format(response.text))

@@ -12,16 +12,17 @@ class CheetayTasks(TaskSet):
         """
         super(CheetayTasks, self).__init__(*args, **kwargs)
         self.cheetay_apis = CheetayApis(self.locust.host, self.client)
-        self.credentials = random.choice(USER_CREDENTIALS)
 
     def on_start(self):
         """
         Login to Cheetay
         """
-        # USER_CREDENTIALS.remove(self.credentials)
-        # email = self.credentials[0]
-        # self.cheetay_apis.login(email)
-        self.cheetay_apis.homepage()
+        self.credentials = random.choice(USER_CREDENTIALS)
+        USER_CREDENTIALS.remove(self.credentials)
+        print(len(USER_CREDENTIALS))
+        email = self.credentials[0]
+        self.cheetay_apis.login(email)
+        # self.cheetay_apis.homepage()
 
     @task(3)
     def search(self):
@@ -38,3 +39,12 @@ class CheetayTasks(TaskSet):
     # @task(1)
     # def add_to_basket(self):
     #     self.cheetay_apis.add_basket()
+
+    @task(3)
+    def checkout_call(self):
+        self.cheetay_apis.final_checkout()
+
+    @task(1)
+    def order_list(self):
+        self.cheetay_apis.order_list()
+

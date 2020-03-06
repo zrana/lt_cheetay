@@ -76,7 +76,7 @@ class CheetayApis(CheetayBase):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
             'Content-Type': 'application/json',
-            'Referer': 'https://test.cheetay.pk/',
+            'Referer': self.hostname,
             'Vary': 'Accept, Cookie',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -99,7 +99,7 @@ class CheetayApis(CheetayBase):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
             'Content-Type': 'application/json',
-            'Referer': 'https://test.cheetay.pk/',
+            'Referer': self.hostname,
             'Vary': 'Accept, Cookie',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -128,7 +128,7 @@ class CheetayApis(CheetayBase):
             'Server': 'nginx/1.4.6 (Ubuntu)',
             'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
             'Content-Type': 'application/json',
-            'Referer': 'https://test.cheetay.pk/',
+            'Referer': self.hostname,
             'Vary': 'Accept, Cookie',
             'Connection': 'keep-alive',
             'X-Frame-Options': 'SAMEORIGIN',
@@ -138,4 +138,88 @@ class CheetayApis(CheetayBase):
         }
         response = self.client.post(post_url, data=json.dumps(body), headers=headers, name='add_basket')
         self._check_response_data(response)
+        # get_url = self.hostname + '/v3/oscarapi/basket/{}/promised-time/'.format(self.client.cookies['basket_id'])
+        # response = self.client.get(get_url)
+        # self._check_response_data(response)
         return response
+
+    # def promise_time(self):
+    #     get_url = self.hostname + '/v3/oscarapi/basket/{}/promised-time/'.format(self.client.cookies['basket_id'])
+    #     response = self.client.get(get_url)
+    #     self._check_response_data(response)
+    #     return response
+
+    def order_list(self):
+        get_url = self.hostname + 'v3/oscarapi/customer-orders'
+        response = self.client.get(get_url)
+        self._check_response_data(response)
+        return response
+
+    def add_address(self):
+        post_url = self.hostname + 'v3/oscarapi/address/add/'
+        body = {
+            "instructions": "",
+            "delivery_area": 430,
+            "latitude": 31.46359440,
+            "longitude": 74.24943010,
+            "label": "Home",
+            "line1": "Judicial Colony"
+        }
+        headers = {
+            'Server': 'nginx/1.4.6 (Ubuntu)',
+            'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
+            'Content-Type': 'application/json',
+            'Referer': self.hostname,
+
+            'Vary': 'Accept, Cookie',
+            'Connection': 'keep-alive',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Allow': 'GET, POST, DELETE, HEAD, OPTIONS',
+            'X-CSRFToken': self.client.cookies['csrftoken'],
+            'Set-Cookies': 'basket_id={}; Path=/'.format(self.client.cookies['basket_id'])
+        }
+        response = self.client.post(post_url, headers=headers, data=json.dumps(body), name='add_address')
+        self._check_response_data(response)
+        address_id = json.loads(response.text)["data"]["id"]
+        # self.checkout(address_id)
+        return address_id
+
+    def checkout(self, address_id):
+        post_url = self.hostname + 'v3/oscarapi/checkout/'
+        body = {
+            "basket": "/oscarapi/baskets/{}".format(self.client.cookies['basket_id']) + "/",
+            "address_id": address_id,
+            "shipping_address": {
+                "country": "/oscarapi/countries/PK/",
+                "first_name": "M",
+                "last_name": "Rehan",
+                "line1": "Arbisoft",
+                "line2": "Judicial Colony",
+                "line4": "Lahore",
+                "phone_number": "+923201498318"
+            },
+            "source": "Android-App",
+            "is_self_pickup": False,
+            "category": "food",
+            "payment_method": "COD"
+        }
+        headers = {
+            'Server': 'nginx/1.4.6 (Ubuntu)',
+            'Date': 'Thu, 28 Oct 2019 09:32:18 GMT',
+            'Content-Type': 'application/json',
+            'Referer': self.hostname,
+            'Vary': 'Accept, Cookie',
+            'Connection': 'keep-alive',
+            'X-Frame-Options': 'SAMEORIGIN',
+            'Allow': 'GET, POST, DELETE, HEAD, OPTIONS',
+            'X-CSRFToken': self.client.cookies['csrftoken'],
+            'Set-Cookies': 'basket_id={}; Path=/'.format(self.client.cookies['basket_id'])
+        }
+        response = self.client.post(post_url, data=json.dumps(body), headers=headers, name='checkout')
+        self._check_response_data(response)
+        return response
+
+    def final_checkout(self):
+        address_id = self.add_address()
+        self.add_basket()
+        self.checkout(address_id)
